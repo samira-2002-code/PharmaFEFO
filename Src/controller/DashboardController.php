@@ -1,9 +1,20 @@
 <?php
-require_once __DIR__ .'/../Repository/StockBatchRepository.php';
-class dashboardController{
-    public function index(){
-        $repository = new StockBatchRepository();
-        $batches = $repository->getAll();
-        require __DIR__ .'/../../templates/dashboard/index.php';
+
+require_once __DIR__ . '/../repository/StockBatchRepository.php';
+
+class DashboardController
+{
+    private StockBatchRepository $repo;
+
+    public function __construct()
+    {
+        $this->repo = new StockBatchRepository();
+    }
+
+    public function index()
+    {
+        $batches = $this->repo->getAll();
+
+        include __DIR__ . '/../views/dashboard.php';
     }
 }
