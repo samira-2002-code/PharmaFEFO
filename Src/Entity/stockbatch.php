@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Entity;
-
 class StockBatch
 {
     public int $id;
