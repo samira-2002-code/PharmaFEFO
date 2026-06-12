@@ -1,63 +1,93 @@
 <?php
 
+// ============================================================
+// src/Entity/StockBatch.php
+// ============================================================
+
+namespace App\Entity;
+
 class StockBatch
 {
-    private int $id;
-    private string $lotNumber;
-    private string $expirationDate;
-    private int $quantity;
+    public int $id;
+    public int $productId;
+    public string $batchNumber;
+    public int $quantity;
+    public string $expiryDate;
+    public string $status;
+    public string $createdAt;
 
-    public function __construct(
-        int $id,
-        string $lotNumber,
-        string $expirationDate,
-        int $quantity
-    ) {
-        $this->id = $id;
-        $this->lotNumber = $lotNumber;
-        $this->expirationDate = $expirationDate;
-        $this->quantity = $quantity;
+    // Données jointes depuis la table products
+    public string $productName = '';
+    public string $productReference = '';
+    public float $unitPrice = 0.0;
+    public string $unit = '';
+
+    // Constantes de statut
+    const STATUS_ACTIVE  = 'ACTIVE';
+    const STATUS_EXPIRED = 'EXPIRED';
+
+    // Seuils d'alerte (en jours)
+    const ALERT_ORANGE = 90;
+    const ALERT_RED    = 30;
+
+    public function __construct(array $data = [])
+    {
+        $this->id               = $data['id'] ?? 0;
+        $this->productId        = $data['product_id'] ?? 0;
+        $this->batchNumber      = $data['batch_number'] ?? '';
+        $this->quantity         = (int) ($data['quantity'] ?? 0);
+        $this->expiryDate       = $data['expiry_date'] ?? '';
+        $this->status           = $data['status'] ?? self::STATUS_ACTIVE;
+        $this->createdAt        = $data['created_at'] ?? '';
+        $this->productName      = $data['product_name'] ?? '';
+        $this->productReference = $data['product_reference'] ?? '';
+        $this->unitPrice        = (float) ($data['unit_price'] ?? 0.0);
+        $this->unit             = $data['unit'] ?? '';
     }
 
-    public function getId()
+    /**
+     * Calcule le nombre de jours restants avant péremption
+     */
+    public function getDaysRemaining(): int
     {
-        return $this->id;
+        $today  = new \DateTime('today');
+        $expiry = new \DateTime($this->expiryDate);
+        $diff   = $today->diff($expiry);
+
+        // Si la date est dépassée, retourne un nombre négatif
+        return $expiry >= $today ? (int) $diff->days : -(int) $diff->days;
     }
 
-    public function getLotNumber()
+    /**
+     * Retourne le niveau d'alerte : 'expired', 'red', 'orange', 'green'
+     */
+    public function getAlertLevel(): string
     {
-        return $this->lotNumber;
-    }
-
-    public function getExpirationDate()
-    {
-        return $this->expirationDate;
-    }
-
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    public function getStatus(): string
-    {
-        $today = new DateTime();
-        $expiration = new DateTime($this->expirationDate);
-
-        if ($expiration < $today) {
-            return 'EXPIRED';
+        if ($this->status === self::STATUS_EXPIRED) {
+            return 'expired';
         }
 
-        $days = (int)$today->diff($expiration)->format('%a');
+        $days = $this->getDaysRemaining();
 
-        if ($days <= 30) {
-            return 'CRITICAL';
-        }
+        if ($days < 0) return 'expired';
+        if ($days <= self::ALERT_RED) return 'red';
+        if ($days <= self::ALERT_ORANGE) return 'orange';
+        return 'green';
+    }
 
-        if ($days <= 90) {
-            return 'WARNING';
-        }
+    /**
+     * Retourne la valeur totale du lot (quantité × prix unitaire)
+     */
+    public function getTotalValue(): float
+    {
+        return $this->quantity * $this->unitPrice;
+    }
 
-        return 'OK';
+    /**
+     * Vérifie si le lot est expiré
+     */
+    public function isExpired(): bool
+    {
+        return $this->status === self::STATUS_EXPIRED || $this->getDaysRemaining() < 0;
     }
 }

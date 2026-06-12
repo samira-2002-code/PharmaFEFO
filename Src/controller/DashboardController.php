@@ -1,20 +1,29 @@
 <?php
 
-require_once __DIR__ . '/../repository/StockBatchRepository.php';
+// ============================================================
+// src/Controller/DashboardController.php
+// ============================================================
+
+namespace App\Controller;
+
+use App\Repository\StockBatchRepository;
 
 class DashboardController
 {
     private StockBatchRepository $repo;
 
-    public function __construct()
+    public function __construct(StockBatchRepository $repo)
     {
-        $this->repo = new StockBatchRepository();
+        $this->repo = $repo;
     }
 
-    public function index()
+    public function index(): void
     {
-        $batches = $this->repo->getAll();
+        $lots         = $this->repo->findAll();
+        $totalLots    = count($lots);
+        $orangeAlerts = $this->repo->countOrangeAlerts();
+        $redAlerts    = $this->repo->countRedAlerts();
 
-        include __DIR__ . '/../views/dashboard.php';
+        require __DIR__ . '/../../templates/dashboard/index.php';
     }
 }

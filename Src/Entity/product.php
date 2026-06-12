@@ -1,25 +1,27 @@
 <?php
 
+// ============================================================
+// src/Entity/Product.php
+// ============================================================
+
+namespace App\Entity;
+
 class Product
 {
-    private int $id;
-    private string $name;
+    public int $id;
+    public string $name;
+    public string $reference;
+    public string $unit;
+    public float $unitPrice;
+    public string $createdAt;
 
-    public function __construct(
-        int $id,
-        string $name
-    ) {
-        $this->id = $id;
-        $this->name = $name;
-    }
-
-    public function getId(): int
+    public function __construct(array $data = [])
     {
-        return $this->id;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
+        $this->id        = $data['id'] ?? 0;
+        $this->name      = $data['name'] ?? '';
+        $this->reference = $data['reference'] ?? '';
+        $this->unit      = $data['unit'] ?? 'comprimé';
+        $this->unitPrice = (float) ($data['unit_price'] ?? 0.0);
+        $this->createdAt = $data['created_at'] ?? '';
     }
 }
