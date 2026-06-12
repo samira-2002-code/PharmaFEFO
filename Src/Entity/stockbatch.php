@@ -10,17 +10,15 @@ class StockBatch
     public string $status;
     public string $createdAt;
 
-    // Données jointes depuis la table products
     public string $productName = '';
     public string $productReference = '';
     public float $unitPrice = 0.0;
     public string $unit = '';
 
-    // Constantes de statut
+ 
     const STATUS_ACTIVE  = 'ACTIVE';
     const STATUS_EXPIRED = 'EXPIRED';
 
-    // Seuils d'alerte (en jours)
     const ALERT_ORANGE = 90;
     const ALERT_RED    = 30;
 
@@ -39,22 +37,18 @@ class StockBatch
         $this->unit             = $data['unit'] ?? '';
     }
 
-    /**
-     * Calcule le nombre de jours restants avant péremption
-     */
+   
     public function getDaysRemaining(): int
     {
         $today  = new \DateTime('today');
         $expiry = new \DateTime($this->expiryDate);
         $diff   = $today->diff($expiry);
 
-        // Si la date est dépassée, retourne un nombre négatif
+        
         return $expiry >= $today ? (int) $diff->days : -(int) $diff->days;
     }
 
-    /**
-     * Retourne le niveau d'alerte : 'expired', 'red', 'orange', 'green'
-     */
+   
     public function getAlertLevel(): string
     {
         if ($this->status === self::STATUS_EXPIRED) {
@@ -69,19 +63,16 @@ class StockBatch
         return 'green';
     }
 
-    /**
-     * Retourne la valeur totale du lot (quantité × prix unitaire)
-     */
+   
     public function getTotalValue(): float
     {
         return $this->quantity * $this->unitPrice;
     }
 
-    /**
-     * Vérifie si le lot est expiré
-     */
+    
     public function isExpired(): bool
     {
         return $this->status === self::STATUS_EXPIRED || $this->getDaysRemaining() < 0;
     }
 }
+
