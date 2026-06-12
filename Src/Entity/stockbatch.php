@@ -75,6 +75,3 @@ class StockBatch
         return $this->status === self::STATUS_EXPIRED || $this->getDaysRemaining() < 0;
     }
 }
-
-
-
