@@ -92,15 +92,17 @@ sélectionne le lot **ACTIF** dont `expiry_date` est la plus proche et dont la q
 ORDER BY sb.expiry_date ASC LIMIT 1
 ```
 
-La quantité est ensuite décrémentée via `decrementQuantity()`.
+La quantité est ensuite décrémentée via `decrementQuantity()`
+<img width="460" height="319" alt="Screenshot 2026-06-12 165034" src="https://github.com/user-attachments/assets/488a0e8a-7d92-4deb-a769-ac10b48b7218" />
+
+<img width="587" height="413" alt="usecase" src="https://github.com/user-attachments/assets/9a2d2531-c22f-49f4-922e-b6d07d4c73b5" />
+
+<img width="1121" height="614" alt="image" src="https://github.com/user-attachments/assets/69884f50-9daf-4b4e-b11e-828427573fa9" />
+
+
+
+
 
 ---
 
-## Niveaux d'alerte
 
-| Couleur | Condition |
-|---|---|
-| 🟢 Vert | Plus de 90 jours |
-| 🟠 Orange | Entre 30 et 90 jours |
-| 🔴 Rouge | Moins de 30 jours |
-| ⬛ Gris | Expiré (date dépassée ou statut EXPIRED) |
